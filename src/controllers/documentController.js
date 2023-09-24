@@ -1,19 +1,31 @@
 import asyncHandler from "express-async-handler";
 import {
-  getChildProfilesAsync,
+  uploadSingleFileAsync,
+  getSignedUrlForKeysAsync,
+  deleteFilesForKeysAsync,
 } from "../services/documentService.js";
-import { notFound } from "../middleware/errorMiddleware.js";
 
-
-// @desc notification broadcast
-// route POST /api/notifications/broadcast
+// @desc upload new single file
+// route POST /api/documents/uploadSingleFile
 // @access Private
-export const getChildProfileList = asyncHandler(async (req, res) => {
-  // run query
-  const results = await getChildProfilesAsync();
-  // return response
+export const uploadSingleFile = asyncHandler(async (req, res) => {
+  const key = await uploadSingleFileAsync(req.body.path, req.file);
   return res.status(200).json({
-    success: true,
-    childProfiles: results
-  })
+    generatedKey: key,
+  });
+});
+
+// @desc get urls for file keys
+// route POST /api/documents/getUrlsForKeys
+// @access Private
+export const getUrlsForKeys = asyncHandler(async (req, res) => {
+  return res.status(200).json(await getSignedUrlForKeysAsync(req.body.keys));
+});
+
+// @desc delete files for keys
+// route POST /api/documents/getUrdeleteFilesForKeys
+// @access Private
+export const deleteFilesForKeys = asyncHandler(async (req, res) => {
+  await deleteFilesForKeysAsync(req.body.keys)
+  return res.status(200).json("delete request sent successfully");
 });
