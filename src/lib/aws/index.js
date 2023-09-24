@@ -1,17 +1,18 @@
+import { v4 as uuid4 } from "uuid";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   S3_REIGON,
   S3_ACCESS_KEY_ID,
   S3_SECRET_ACCESS_KEY,
   S3_BUCKET,
 } from "../../config/index.js";
-import { v4 as uuid4 } from "uuid";
 import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
+  ListObjectsV2Command,
 } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 /**
  * create a s3 client with credentials
@@ -23,6 +24,18 @@ const s3 = new S3Client({
   },
   region: S3_REIGON,
 });
+
+/**
+ * list file for given path
+ */
+export const listFilesInPathAsync = async (path) => {
+  const command = new ListObjectsV2Command({
+    Bucket: S3_BUCKET,
+    Prefix: path,
+  });
+  const response = await s3.send(command);
+  return await getSignedUrlForKeysAsync(response.Contents.map((c) => c.Key));
+};
 
 /**
  * upload a single file
@@ -56,7 +69,7 @@ export const getSignedUrlForKeysAsync = async (keyList) => {
     });
     urlList.push({
       key: key,
-      url: await getSignedUrl(s3, command, { expiresIn: 60 }),
+      url: await getSignedUrl(s3, command, { expiresIn: 5 * 60 }),
     });
   }
   return urlList;
