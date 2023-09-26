@@ -34,7 +34,9 @@ export const listFilesInPathAsync = async (path) => {
     Prefix: path,
   });
   const response = await s3.send(command);
-  return await getSignedUrlForKeysAsync(response.Contents.map((c) => c.Key));
+  if (response.Contents)
+    return await getSignedUrlForKeysAsync(response.Contents.map((c) => c.Key));
+  return [];
 };
 
 /**
