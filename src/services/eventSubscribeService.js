@@ -1,4 +1,7 @@
-import { getSignedUrlForKeysAsync } from "./documentService.js";
+import {
+  getSignedUrlForKeysAsync,
+  uploadSingleFileAsync,
+} from "./documentService.js";
 export const subscribeEvents = async (payload) => {
   const { event, data } = payload;
   // parse data
@@ -14,6 +17,17 @@ export const subscribeEvents = async (payload) => {
        * }
        */
       return await getSignedUrlForKeysAsync(data);
+
+    case "UPLOAD_FILES":
+      /**
+       * {event: UPLOAD FILES,
+       * data: [file array]}
+       */
+      const keyList = [];
+      data.files.map(async (file) =>
+        keyList.push( await uploadSingleFileAsync(data.path, file))
+      );
+      return keyList;
     default:
       break;
   }
