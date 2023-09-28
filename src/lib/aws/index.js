@@ -1,5 +1,6 @@
 import { v4 as uuid4 } from "uuid";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import fs from "fs";
 import {
   S3_REIGON,
   S3_ACCESS_KEY_ID,

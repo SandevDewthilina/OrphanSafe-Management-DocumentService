@@ -24,6 +24,7 @@ export const subscribeEvents = async (payload) => {
        * data: [file array]}
        */
       const keyList = [];
+      
       data.files.map(async (file) =>
         keyList.push( await uploadSingleFileAsync(data.path, file))
       );
